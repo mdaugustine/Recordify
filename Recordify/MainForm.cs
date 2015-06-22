@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
 using AviFile;
+using System.IO;
+using System.Runtime.InteropServices;
 
 namespace Recordify
 {
@@ -118,12 +120,33 @@ namespace Recordify
             e.Result = bitmaps;
             */
 
+            /*
+            List<Bitmap> bitmaps = new List<Bitmap>();
+            Image screen;
+            Bitmap bitmap;
+            MemoryStream ms = new MemoryStream();
+            //List<Image> images = new List<Image>();
+            while(recording)
+            {
+                screen = Pranas.ScreenshotCapture.TakeScreenshot(true);
+                screen.Save(ms, ImageFormat.Png);
+                bitmap = new Bitmap(screen);
+                bitmaps.Add(bitmap);
+                previewBox.Image = bitmap;
+            }
+
+            e.Result = bitmaps;
+            */
+
+            
             Bitmap bmpScreenshot = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
             Graphics g = Graphics.FromImage(bmpScreenshot);
             g.CopyFromScreen(0, 0, 0, 0, Screen.PrimaryScreen.Bounds.Size);
 
             List<Bitmap> bitmaps = new List<Bitmap>();
 
+            int count = 0;
+            //statusLabel.Text = " size of array: " + Marshal.SizeOf(bitmaps);
             while(recording)
             {
                 bmpScreenshot = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
@@ -131,11 +154,14 @@ namespace Recordify
                 g.CopyFromScreen(0, 0, 0, 0, Screen.PrimaryScreen.Bounds.Size);
                 bitmaps.Add(bmpScreenshot);
                 previewBox.Image = bmpScreenshot;
+
+                statusLabel.Text = "Recording frame: " + count++;
+                //statusStrip1.Refresh();
                 //previewBox.Refresh();
             }
 
             e.Result = bitmaps;
-
+            
             /*
             AviManager aviManager = new AviManager(@"..\..\testdata\new.avi", false);
             VideoStream aviStream = aviManager.AddVideoStream(true, 25, bitmaps[0]);
